@@ -1,0 +1,107 @@
+.login-backgroud {
+  background-image: url(../asserts/imgs/dlbj.png);
+  background-repeat: no-repeat;
+  background-color: #f9f9f9;
+  background-size: 100% 100%;
+}
+
+.login-container {
+  position: absolute;
+  top: 13%;
+  width: 100%;
+}
+
+.login {
+  height: 4.5rem;
+  width: 4.5rem;
+  border-radius: 4.5rem;
+}
+
+.login-company-icon {
+  background-image: url(../asserts/imgs/ylcc_logo.png);
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.login-description {
+  position: relative;
+  top: 22%;
+  left: 50%;
+  color: #fff;
+  transform: translateX(-50%);
+  width: 100%;
+  text-align: center;
+  font-size: 1rem;
+  font-weight: bold;
+  margin-top: 1.5rem;
+}
+
+.input-contain {
+  position: absolute;
+  bottom: 30%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 70%;
+  height: 2.5rem;
+}
+
+.input-contain input {
+  width: 100%;
+  border: transparent;
+  background-color: #f9f9f9;
+  height: 2rem;
+  margin-left: 1rem;
+  color: #000;
+  font-size: 0.7rem;
+}
+
+.email-input {
+  background-color: #f9f9f9;
+  border-radius: 0.2rem;
+  padding: 0.25rem 1rem;
+  display: flex;
+  margin-bottom: 0.5rem;
+}
+
+.email-input input {
+  font-size: 0.7rem;
+}
+
+.password-input {
+  bottom: 20%;
+  background-color: #f9f9f9;
+  border-radius: 0.2rem;
+  padding: 0.25rem 1rem;
+  display: flex;
+  margin-bottom: 0.5rem;
+}
+
+.icon-account,
+.icon-my {
+  line-height: 2rem;
+}
+
+.icon-password {
+  transform: rotate(90deg);
+  -ms-transform: rotate(90deg);
+  -moz-transform: rotate(90deg);
+  -webkit-transform: rotate(90deg);
+  -o-transform: rotate(90deg);
+}
+
+.email-input,
+.password-input i {
+  flex: 0 0 1.25rem;
+  font-size: 1.25rem;
+  line-height: 2rem !important;
+}
+
+.binding-btn {
+  bottom: 10%;
+}
+.binding-btn a{
+  background: #1890FF !important;
+  }

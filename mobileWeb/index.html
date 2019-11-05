@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no,minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>友联资产管理平台</title>
+  <script src="./dist/libs/sui/js/jquery-1.10.2.min.js"></script>
+  <script src="./dist/libs/sui/js/dialog.min.js"></script>
+  <script src="./dist/libs/public.js"></script>
+  <link rel="stylesheet" href="./dist/asserts/reset.css">
+  <style>
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+    }
+
+    .title {
+      height: 2.2rem;
+      text-align: center;
+      line-height: 2.2rem;
+      border-bottom: 1px solid #dddddd;
+      background: #E4E4E4;
+      font-size: 1rem;
+    }
+
+    .main {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-flow: column;
+      /* justify-content: space-evenly; */
+    }
+
+    .detail_list ul {
+      display: flex;
+      flex-flow: column;
+    }
+
+    .detail_list ul li {
+      display: flex;
+      padding: 0 1.25rem;
+      align-items: center;
+      height: 6.25rem;
+      border-bottom: 1px solid #dddddd;
+    }
+
+    .login {
+      height: 10rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .login button {
+      background: #1890FF;
+      color: #ffffff;
+      border: none;
+      width: 70%;
+      height: 2.5rem;
+      border-radius: .25rem;
+      cursor: pointer;
+      font-size: 1.2rem;
+    }
+    .device_img{
+      width: calc(100% - 1.2rem);
+      height: 8rem;
+      display: flex;
+      flex-flow: column;
+      justify-content: center;
+      padding: 0.6rem;
+      align-items: center;
+      color: #777777;
+    }
+    .device_img img{
+      /* width: 100%; */
+      height: 100%;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="main">
+    <div class="title">
+      台账概况
+    </div>
+    <div class="detail_list">
+      <div class="device_img">
+        <img src="./dist/asserts/imgs/image.png" alt="">
+        还未上传设备图片
+      </div>
+      <ul>
+        <li class="divece_name">
+          设备名称：
+          <span></span>
+        </li>
+        <li class="device_number">
+          设备编号：
+          <span></span>
+        </li>
+        <li class="use_department">
+          使用部门：
+          <span></span>
+        </li>
+      </ul>
+    </div>
+    <div class="login">
+      <button>更多</button>
+    </div>
+  </div>
+</body>
+<script>
+    let deviceId = getQueryVariable('id');
+    //deviceId = '0376d355-6c74-4f2e-83e8-ff37aa26fc7f';
+    if (!deviceId) {
+      window.location.href = 'login.html';
+    } else {
+      $.ajax({
+        type: "get",
+        url: apiUrl + 'assetaccountinfo/getassetaccountinfo?id=' + deviceId,
+        dataType: "text",
+        contentType: "application/json",
+        success: function (response) {
+          // alert(deviceId)
+          let data = JSON.parse(response);
+          if (data.IsSuccess == true) {
+            if (data.Content != '') {
+              // console.log(data.Content)
+              // $.each($('.detail_list ul li span'),(index,item)=>{
+              //   item.html(JSON.parse(data.Content)[item[0].className])
+              // })
+              let contentArr = data.Content[0];
+              $('.divece_name span').html(contentArr.device_name);
+              $('.device_number span').html(contentArr.device_number);
+              $('.use_department span').html(contentArr.DeptName);
+              if(contentArr.picture_path){
+                $('.device_img').html(`
+                <img src="${imgUrl}/asset_account/${contentArr.picture_path}" alt="">
+                `)
+              }
+              sessionStorage.setItem('use_department',contentArr.use_department)
+              sessionStorage.setItem('scanDeviceId', deviceId);
+            }
+          }
+        },error: function(error){
+          console.log(JSON.parse(error.responseText))
+          // $(window).dialog({
+          //   type : 'notice',
+          //   // infoIcon: './dist/asserts/imgs/icon/loading.gif',
+          //   infoText: '通讯异常！请联系管理员'
+          // });
+          alert('通讯异常！请联系管理员')
+        }
+      });
+      $('div.login button').on('click', (e) => {
+        e.stopImmediatePropagation();
+        let getQueryString = pName => {
+          let url = location.search;
+          let theRequest = [];
+          if (url.indexOf("?") !== -1) {
+            let str = url.substr(1);
+            let strs = str.split("&");
+            for (let i = 0; i < strs.length; i++) {
+              theRequest[strs[i].split("=")[0]] = unescape(strs[i].split("=")[1]);
+            }
+          }
+          return theRequest[pName];
+        };
+        let hasLogined = () => {
+          let currentUri = window.location.href;
+          if (_.includes(currentUri, 'code')) {
+            authorizationCode = getQueryString('code');
+            return true;
+          }
+          return false;
+        }
+        // let token = localStorage.getItem('user_token');
+        // if (token) {
+        //   sessionStorage.setItem('first_login', '1');
+        //   window.location.href = 'src/maintain.html';
+        // } else if (!hasLogined()) {
+        //   window.location.href = 'login.html';
+        // }
+        window.location.href = 'login.html';
+      });
+    }
+  
+</script>
+
+</html>

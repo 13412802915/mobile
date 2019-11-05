@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>友联资产管理平台</title>
+  <script src="../dist/libs/sui/js/jquery-1.10.2.min.js"></script>
+  <script src="../dist/libs/arttemplate-3.0/template-web.js"></script>
+  <script src="../dist/asserts/fonts/iconfont.js"></script>
+  <script src="../dist/libs/public.js"></script>
+  <link rel="stylesheet" href="../dist/asserts/reset.css">
+  <link rel="stylesheet" href="../dist/asserts/fonts/iconfont.css">
+  <style>
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+    }
+    a{
+      text-decoration: none;
+      color:inherit;
+    }
+    .go_back{
+      background: #00284D;
+      height: 2.2rem;
+      line-height: 2.2rem;
+      color: #ffffff;
+      font-size: 0.8rem;
+      padding-left: 0.6rem;
+      position: fixed;
+      width: 100%;
+      top: 0;
+      text-align: center;
+    }
+
+    .go_back a{
+      position: absolute;
+      left: 0.3rem;
+      display: flex;
+      align-items: center;
+    }
+    .go_back span{
+     font-size: 1.2rem;
+    }
+    .title{
+      height: 4rem;
+      text-align: center;
+      line-height: 4rem;
+      border-bottom: 1px solid #dddddd;
+      background: #E4E4E4;
+      font-size: 1.2rem;
+      position: fixed;
+      width: 100%;
+      top: 0;
+    }
+    .main{
+      width: 100%;
+      /* height: 100%; */
+      display: flex;
+      flex-flow: column;
+      position: relative;
+      padding-top: 4.6rem;
+      margin-bottom: 1rem;
+    }
+    .device_name{
+      position: fixed;
+      width: 100%;
+      top: 2.2rem;
+    }
+    .hidden{
+      display: none;
+    }
+    .record_list .device_name{
+      height: 2.5rem;
+      background: #D7D7D7;
+      text-align: center;
+      line-height: 2.5rem;
+    }
+    .record_date ul li .device_data{
+      height: 2.5rem;
+      display: flex;
+      justify-content: space-between;
+      padding: 0 0.6rem;
+      line-height: 2.5rem;
+      align-items: center;
+      background: #E4E4E4;
+      border-bottom: 1px solid #cccccc;
+    }
+    .record_date ul .icon{
+      color: #666666;
+      width: 1.2rem;
+      height: 1.2rem;
+    }
+    .device_data_retract{
+      padding: 0.6rem;
+    }
+    #device_detail .device_data_retract{
+      padding: 0.6rem;
+      justify-content: space-between;
+    }
+    .device_data_retract tr td{
+      padding: 0.4rem 0;
+      line-height: 1.3rem;
+    }
+    .device_data_retract table:first-child tr td:first-child{
+      color: #777777;
+      width: 5rem;
+    }
+    .device_data_retract table.maintenanceItems td{
+      border: 1px solid #dddddd;
+      padding: 0.3rem;
+      line-height: 1.5rem;
+    }
+    .device_data_retract .imgs{
+      display: flex;
+      flex-flow: wrap;
+      width: 100%;
+      height: 100%;
+      margin-top: 0.6rem;
+    }
+    .device_data_retract .imgs img{
+      flex: 0 30%;
+      height: 5rem;
+      margin: 0.3rem 0.3rem;
+      width: 30%;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="main">
+    <div class="go_back"><a href="javascript:void(0);" onclick="window.history.back();"> <span class="icon iconfont iconfanhui"></span> 返回</a><span>保养记录</span></div>
+    <div class="record_list">
+      <div class="device_name">
+        
+      </div>
+      <div class="record_date">
+        <ul id="device_detail">
+          <li>
+            <div class="device_data" show="retract">
+             <span>台账详细信息</span>
+             <svg class="icon" aria-hidden="true">
+                <use xlink:href="#iconyou"></use>
+              </svg>
+            </div>
+            <div class="device_data_retract hidden">
+              <table class="device">
+                <tr>
+                  <td>设备编号：</td>
+                  <td class="device_number"></td>
+                </tr>
+                <tr>
+                  <td>使用部门：</td>
+                  <td class="DeptName"></td>
+                </tr>
+                <tr>
+                  <td>资产类型：</td>
+                  <td class="asset_type"></td>
+                </tr>
+                <tr>
+                  <td>资产编号：</td>
+                  <td class="asset_number"></td>
+                </tr>
+              </table>
+              <img src="" alt="设备图片" width="25%" height="80%" isEnlarge="false">
+            </div>
+          </li>
+        </ul>
+        <ul id="maintenanceRecord">
+
+        </ul>
+      </div>
+    </div>
+
+  </div>
+</body>
+<script type="text/html" id="maintenance_detail_temp">
+  {{if maintenanceData.length > 0}}
+  {{each maintenanceData item index}}
+  <li>
+    <div class="device_data" index="{{index}}" show="retract">
+      <span>{{item.key}}</span>
+      <div>{{item.maintenance_records[0].userName}}</div>
+      <svg class="icon" aria-hidden="true">
+        <use xlink:href="#iconyou"></use>
+      </svg>
+    </div>
+    <div class="device_data_retract hidden" index="{{index}}">
+      <table>
+        <tr>
+          <td>保养人：</td>
+          <td>{{item.maintainer}}</td>
+        </tr>
+        <tr>
+          <td>保养时间：</td>
+          <td>{{item.key}}</td>
+        </tr>
+        <tr>
+          <td>保养备注：</td>
+          <td>{{item.maintenance_records[0].remarks == ''?'无':item.maintenance_records[0].remarks}}</td>
+        </tr>
+      </table>
+      <table class="maintenanceItems">
+      </table>
+      <div class="imgs">
+        
+      </div>
+    </div>
+    </li>
+  {{/each}}
+  {{/if}}
+</script>
+<script type="text/html" id="maintenance_items_temp">
+  {{if maintenanceItemData.length > 0}}
+  {{each maintenanceItemData item index}}
+    <tr>
+      <td width="80%">{{item.maintenance_content}}</td>
+      <td width="20%">
+        <input type="checkbox" name="hasMaintain" id="{{item.id}}" onclick="return false">
+      </td>
+    </tr>
+  {{/each}}
+  {{/if}}
+</script>
+
+<script>
+  let id = getQueryVariable('id'),
+  user_token = sessionStorage.getItem('user_token');
+  let device_type = '';
+  //获取设备详情
+  $.ajax({
+    type: "get",
+    url: apiUrl + 'assetaccountinfo/getassetaccountinfo?id=' + id,
+    dataType: "text",
+    contentType: "application/json",
+    success: function (response) {
+      // alert(deviceId)
+      let data = JSON.parse(response);
+      if (data.IsSuccess == true) {
+        if (data.Content != '') {
+          // console.log(data.Content)
+          let accountinfo = data.Content[0];
+          device_type = accountinfo.device_type;
+          $('.device_name').html(accountinfo.device_name);
+          $('#device_detail .device_data_retract .device_number').html(accountinfo.device_number);
+          $('#device_detail .device_data_retract .DeptName').html(accountinfo.DeptName);
+          $('#device_detail .device_data_retract .asset_type').html(accountinfo.asset_type);
+          $('#device_detail .device_data_retract .asset_number').html(accountinfo.asset_number);
+          if(accountinfo.picture_path == null){
+            $('#device_detail .device_data_retract img').hide();
+          }else{
+           $('#device_detail .device_data_retract img').show();
+            $('#device_detail .device_data_retract img').prop('src',imgUrl+'/asset_account/'+accountinfo.picture_path);
+          }
+                    
+          //获取保养详情
+          $.ajax({
+            type: "get",
+            url: apiUrl+ 'maintain/getmaintenancerecord?deviceId=' + id +'&pageNum=1',
+            dataType: "text",
+            contentType: "application/json",
+            beforeSend: function(request) {
+          　　request.setRequestHeader("Authorization", user_token);
+            },
+            success: function (response) {
+              let data = JSON.parse(response);
+              if(data.IsSuccess == true){
+                if(data.Content != ''){
+                  // console.log(data.Content)
+                  let maintenanceData = data.Content.datas;
+                  $('#maintenanceRecord').html( template('maintenance_detail_temp',{maintenanceData: maintenanceData}) );
+                  // $('#maintenanceItems').html()
+
+                    //获取所有保养项
+                    $.ajax({
+                      type: "get",
+                      url: apiUrl + 'maintain/getmaintenanceitems?deviceTypeId=' + device_type,
+                      dataType: "text",
+                      contentType: "application/json",
+                      beforeSend: function(request) {
+                    　　request.setRequestHeader("Authorization", user_token);
+                      },
+                      success: function (response) {
+                        let data = JSON.parse(response);
+                        // console.log(data);
+                        if (data.IsSuccess == true) {
+                          if (data.Content != '') {
+                            let getmaintenanceitems = data.Content;
+
+                            maintenanceData.forEach((item,index)=>{
+                              $(`.device_data_retract[index=${index}] .maintenanceItems`).html( template('maintenance_items_temp',{maintenanceItemData: getmaintenanceitems}) );
+                              item.maintenance_records[0].maintenanceitems.forEach(item => {
+                                $(`.device_data_retract[index=${index}] .maintenanceItems td input#`+item.maintenance_items_id).prop('checked',true);
+                              });
+
+                              let pictruePath = item.maintenance_records[0].picture_path.split(',');
+                              pictruePath.forEach(item =>{
+                                var img_path = item.replace(/\"/g, ""); 
+                                $(`.device_data_retract[index=${index}] .imgs`).append(`
+                                  <img src="${imgUrl}/maintain/${img_path}" alt="保养图片" isEnlarge="false">
+                                `)
+                              });
+                              setTimeout(()=>{
+                               $('#device_detail .device_data_retract img').on('click',(e)=>{
+                                  e.stopImmediatePropagation();
+                                  if($(e.currentTarget).attr('isEnlarge') == "false"){
+                                    $(e.currentTarget).css({
+                                      width: '100%',
+                                      height: 'auto',
+                                      position: 'fixed',
+                                      left: 0,
+                                      margin: 0,
+                                      top: '50%',
+                                      transform: 'translateY(-50%)'
+                                    }).attr('isEnlarge','true');
+                                  }else{
+                                    $(e.currentTarget).css({
+                                      position: 'unset',
+                                      height: "80%",
+                                      margin: '0.3rem 0.3rem',
+                                      width: '25%',
+                                      transform: ''
+                                    }).attr('isEnlarge','false');
+                                  }
+                                })
+                                $('.device_data_retract .imgs img').on('click',(e)=>{
+                                  e.stopImmediatePropagation();
+                                  if($(e.currentTarget).attr('isEnlarge') == "false"){
+                                    $(e.currentTarget).css({
+                                      width: '100%',
+                                      height: 'auto',
+                                      position: 'fixed',
+                                      left: 0,
+                                      margin: 0,
+                                      top: '50%',
+                                      transform: 'translateY(-50%)'
+                                    }).attr('isEnlarge','true');
+                                  }else{
+                                    $(e.currentTarget).css({
+                                      flex: '0 30%',
+                                      position: 'unset',
+                                      height: '5rem',
+                                      margin: '0.3rem 0.3rem',
+                                      width: '30%',
+                                      transform: ''
+                                    }).attr('isEnlarge','false');
+                                  }
+                                })
+                              },100)
+
+                            })
+                          }
+                        }
+                      }
+                    });
+                  //切换
+                  $('.device_data').on('click',(e)=>{
+                    e.stopImmediatePropagation();
+                    // console.log($(e.currentTarget))
+                    if(e.currentTarget.getAttribute('show') == 'retract'){
+                      $(e.currentTarget).find('use').attr('xlink:href','#iconxia');
+                      e.currentTarget.setAttribute('show','expand');
+                      $(e.currentTarget).next().show();
+                      if($(e.currentTarget).parent().parent()[0].id == 'device_detail'){
+                        $('#device_detail .device_data_retract').css('display','flex');
+                      }
+                    }else{
+                      $(e.currentTarget).find('use').attr('xlink:href','#iconyou');
+                      e.currentTarget.setAttribute('show','retract');
+                      $(e.currentTarget).next().hide();
+                    }
+                  });
+
+                }
+              }
+            }
+          });
+
+        }
+      }
+    }
+  });
+
+  // $('.device_data').on('click',(e)=>{
+  //   e.stopImmediatePropagation();
+  //   // console.log($(e.currentTarget))
+  //   debugger
+  //   if(e.currentTarget.getAttribute('show') == 'retract'){
+  //     $(e.currentTarget).find('use').attr('xlink:href','#iconxia');
+  //     e.currentTarget.setAttribute('show','expand');
+  //     $(e.currentTarget).next().show();
+
+  //   }else{
+  //     $(e.currentTarget).find('use').attr('xlink:href','#iconyou');
+  //     e.currentTarget.setAttribute('show','retract');
+  //     $(e.currentTarget).next().hide();
+  //   }
+  // });
+</script>
+</html>

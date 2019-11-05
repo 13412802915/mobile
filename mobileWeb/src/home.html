@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>友联资产管理平台</title>
+  <script src="../dist/libs/sui/js/jquery-1.10.2.min.js"></script>
+  <script src="http://res.wx.qq.com/open/js/jweixin-1.4.0.js"></script>
+  <script src="../dist/asserts/fonts/iconfont.js"></script>
+  <script src="../dist/libs/sui/js/dialog.min.js"></script>
+  <script src="../dist/libs/public.js"></script>
+  <script src="../dist/libs/sui/js/zepto.min.js"></script>
+  <link rel="stylesheet" href="../dist/css/dialog.css">
+  <link rel="stylesheet" href="../dist/asserts/reset.css">
+  <style>
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+    }
+    .title{
+      height: 4rem;
+      text-align: center;
+      line-height: 4rem;
+      border-bottom: 1px solid #dddddd;
+      background: #E4E4E4;
+      font-size: 1.2rem;
+    }
+    a{
+      text-decoration: none;
+      color:inherit;
+    }
+    .main{
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-flow: column;
+    }
+    .person{
+      height: 5rem;
+      line-height: 5rem;
+      padding-left: 1.25rem;
+      background: url("../dist/asserts/imgs/ylcc.png") no-repeat;
+      background-size: 100% 100%;
+      color: #ffffff;
+      font-size: 0.825rem;
+    }
+
+    .person span{
+      color: #1199FF;
+    }
+
+    .operation ul {
+      display: flex;
+      flex-flow: column;
+    }
+
+    .operation ul li {
+      display: flex;
+      padding: 0 1.25rem;
+      align-items: center;
+      height: 8rem;
+      border-bottom: 1px solid #dddddd;
+      justify-content: center;
+    }
+    .operation .icon{
+      width: 2.8rem;
+      height: 2.8rem;
+      fill: #0099FF;
+    }
+    .operation li> div,.operation li> a{
+      display: flex;
+      flex-flow: column;
+      align-items: center;
+    }
+    .operation li span{
+      font-weight: bold;
+      margin-top: 0.3rem;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="main">
+    <div class="title">
+      孖洲岛资产管理平台
+    </div>
+    <div class="person">
+      欢迎您！<span></span>
+    </div>
+    <div class="operation">
+      <ul>
+        <li>
+          <div id="scan">
+            <svg class="icon" aria-hidden="true">
+              <use xlink:href="#iconicon2"></use>
+            </svg>
+            <span>扫码保养</span>
+          </div>
+        </li>
+        <li>
+          <a href="maintenanceRecord.html">
+            <svg class="icon" aria-hidden="true">
+              <use xlink:href="#iconjilu"></use>
+            </svg>
+            <span>保养记录</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</body>
+<script type="text/javascript">
+  let url = window.location.href;
+  let user_msg = sessionStorage.getItem('user_msg')
+  // console.log(user_msg)
+  $('.person span').html(JSON.parse(user_msg).name);
+  // $.get('/api/account/getjsauth?url=' + 'http://app.esdgd.com/mobileApp/src/home.html', function (data) {
+  $.get('/api/account/getjsauth?url=' + url, function (data) {
+
+    // console.log(data);
+    // $('.result').html(data);
+    //注入权限验证配置
+    wx.config({
+        debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+        appId: data.Content.appId, // 必填，公众号的唯一标识
+        timestamp: data.Content.timestamp, // 必填，生成签名的时间戳
+        nonceStr: data.Content.nonceStr, // 必填，生成签名的随机串
+        signature: data.Content.signature,// 必填，签名
+        jsApiList: ['scanQRCode'] // 必填，调用微信扫一扫接口
+    });
+  });
+    //调用微信扫一扫接口
+  $('#scan').on('click',function(){
+      //首先判断是否使用微信内，因为微信JS-SDK只有在微信环境下才有用
+      var environmental= window.navigator.userAgent.toLowerCase();
+      if (environmental.match(/MicroMessenger/i) == 'micromessenger') {
+          wx.ready(function() {
+              //获取本地跳转地址
+              wx.scanQRCode({
+                  needResult: 1,// 默认为0，扫描结果由微信处理，1则直接返回扫描结果，
+                  desc: 'scanQRCode desc',// 可以指定扫二维码还是一维码，默认二者都有
+                  success: function(res) {
+                      //alert(JSON.stringify(res));
+                      //console.log(res);
+                      if(res.errMsg == "scanQRCode:ok"){
+                        //alert(res.resultStr);
+                        let url = res.resultStr;
+                        let deviceId = getUrlValue(url,'id');
+                        if(deviceId){
+                          //获取设备使用部门
+                          $.ajax({
+                            type: "get",
+                            url: apiUrl + 'assetaccountinfo/getassetaccountinfo?id=' + deviceId,
+                            dataType: "text",
+                            contentType: "application/json",
+                            success: function (response) {
+                              let data = JSON.parse(response);
+                              if (data.IsSuccess == true) {
+                                if (data.Content != '') {
+                                  let contentArr = data.Content[0];
+                                  console.log(contentArr.use_department)
+                                  console.log(JSON.parse(user_msg).dpId)
+                                  if(contentArr.use_department == null){
+                                    $(window).dialog({
+                                      type: 'confirm',
+                                      style: 'default', // default、ios、android
+                                      titleText: '确认',
+                                      content: '此设备不属于您的部门，您没有权限查看该设备！',
+                                      onClickConfirmBtn: function () {
+                                        window.location.href = 'src/home.html';
+                                      }
+                                    });
+                                    return;
+                                  }
+                                  if(contentArr.use_department != JSON.parse(user_msg).dpId && JSON.parse(user_msg).isAdmin == false){
+                                    $(window).dialog({
+                                      type: 'confirm',
+                                      style: 'default', // default、ios、android
+                                      titleText: '确认',
+                                      content: '此设备不属于您的部门，您没有权限查看该设备！',
+                                      onClickConfirmBtn: function () {
+                                        window.location.href = 'src/home.html';
+                                      }
+                                    });
+                                    return;
+                                  }
+
+                                  sessionStorage.setItem('use_department',contentArr.use_department)
+                                  sessionStorage.setItem('scanDeviceId', deviceId);
+
+                                  window.location.href = 'maintain.html';
+                                }
+                              }
+                            },error: function(error){
+                              console.log(JSON.parse(error.responseText))
+                              // $(window).dialog({
+                              //   type : 'notice',
+                              //   // infoIcon: './dist/asserts/imgs/icon/loading.gif',
+                              //   infoText: '通讯异常！请联系管理员'
+                              // });
+                              alert('通讯异常！请联系管理员')
+                            }
+                          });
+                          // sessionStorage.setItem("scanDeviceId", JSON.stringify(deviceId));
+
+                        }
+                      }
+                  }
+              });
+          });
+      }else {
+          alert("请在微信中登录！");
+      }
+  });
+</script>
+</html>

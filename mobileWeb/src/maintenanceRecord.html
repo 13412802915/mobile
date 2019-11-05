@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>友联资产管理平台</title>
+  <script src="../dist/libs/sui/js/jquery-1.10.2.min.js"></script>
+  <script src="../dist/asserts/fonts/iconfont.js"></script>
+  <script src="../dist/libs/public.js"></script>
+  <script src="../dist/libs/arttemplate-3.0/template-web.js"></script>
+  <link rel="stylesheet" href="../dist/asserts/reset.css">
+  <link rel="stylesheet" href="../dist/asserts/fonts/iconfont.css">
+  <style>
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+    }
+    .icon {
+      width: 1em;
+      height: 1em;
+      vertical-align: -0.15em;
+      fill: currentColor;
+      overflow: hidden;
+    }
+    a{
+      text-decoration: none;
+      color:inherit;
+    }
+    .go_home{
+      background: #00284D;
+      height: 2.2rem;
+      line-height: 2.2rem;
+      color: #ffffff;
+      font-size: 0.8rem;
+      padding-left: 0.6rem;
+      position: fixed;
+      width: 100%;
+      top: 4rem;
+    }
+    .title{
+      height: 4rem;
+      text-align: center;
+      line-height: 4rem;
+      border-bottom: 1px solid #dddddd;
+      background: #E4E4E4;
+      font-size: 1.2rem;
+      position: fixed;
+      width: 100%;
+      top: 0;
+    }
+    .main{
+      width: 100%;
+      /* height: 100%; */
+      display: flex;
+      flex-flow: column;
+      background: #ffffff;
+      position: relative;
+      padding-top: 9.2rem;
+      margin-bottom: 1rem;
+    }
+    .device_name{
+      position: fixed;
+      width: 100%;
+      top: 6.2rem;
+    }
+    .device_name ul{
+      display: flex;
+      justify-content: space-evenly;
+      background:#D7D7D7;
+      height: 3rem;
+    }
+    .deivce_list{
+      margin-bottom: 1rem;
+    }
+    .device_name ul li{
+      width: 50%;
+      height: 100%;
+      text-align: center;
+      line-height: 3rem;
+      position: relative;
+    }
+    .device_name ul li:first-child{
+      border-right: 1px solid #333333;
+    }
+    .device_name ul .icon{
+      color: #666666;
+      position: absolute;
+      width: 1.2rem;
+      height: 1.2rem;
+      right: 0.5rem;
+      top: 0.9rem;
+    }
+     /* .deivce_list{
+      position: relative;
+    } */
+    .deivce_list li{
+      margin: 0.3rem 0 0 1rem;
+    }
+    .deivce_list li.bigType_list{
+      margin-right: 0.6rem;
+    }
+    /* .deivce_list ul{
+      position: absolute;
+      left: 1rem;
+    }  */
+    .treeNode{
+      display: flex;
+      justify-content: space-between;
+    }
+    .bigType_list .icon{
+      color: #108de9;
+    }
+    .middleType_list .icon{
+      color: #16c2c2;
+    }
+    .smallType_list .icon{
+      color: #9266f9;
+    }
+    .device .icon{
+      color: #FF6600;
+    }
+    .bottom-space{
+      width: 100%;
+      height: 1rem;
+      position: fixed;
+      bottom: 0;
+      background: #ffffff;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="main">
+    <div class="title">
+    保养记录
+    </div>
+    <div class="go_home"><a href="home.html"> <span class="icon iconfont iconfanhui"></span> 返回首页</a></div>
+    <div class="device_name">
+      <ul>
+        <li>台账名称</li>
+        <li id="sort" sort="down">最新保养日期 
+          <svg class="icon" aria-hidden="true">
+            <use xlink:href="#iconxia1"></use>
+          </svg></li>
+      </ul>
+    </div>
+    <div class="deivce_list">
+    </div>
+  </div>
+  <div class="bottom-space"></div>
+</body>
+<script type="text/html" id="tree_temp">
+  {{if treeList.length > 0}}
+  {{each treeList item index}}
+    <li class="{{item.ntype}}_list" id="{{item.id}}" ntype="{{item.ntype}}" expend="true">
+      <div class="treeNode" onclick="getTreeList(this)">
+        <div>
+          {{if item.ntype != 'device'}}
+          <span class="icon iconfont iconic_configchecklist"></span>
+          {{else}}
+          <span class="icon iconfont iconjiqiren___"></span>
+          {{/if}}
+          <span class="name">{{item.name}}</span>
+        </div>
+        {{if item.ntype == 'device'}}
+        <div class="maintain_time">
+          {{item.time}}
+        </div>
+        {{/if}} 
+      </div>
+    </li>
+  {{/each}}
+  {{/if}}
+</script>
+<script>
+  let user_token = sessionStorage.getItem('user_token');
+  //获取树形
+  $.ajax({
+    type: "get",
+    url: apiUrl+ 'maintain/getdevicetypetree',
+    dataType: "text",
+    contentType: "application/json",
+    beforeSend: function(request) {
+  　　request.setRequestHeader("Authorization", user_token);
+    },
+    success: function (response) {
+     let data = JSON.parse(response);
+      // console.log(data)
+      if(data.IsSuccess){
+        let treeList = data.Content;
+        $('.deivce_list').append(`
+          <ul class="${treeList[0].ntype}"><ul>
+        `);
+        $(`.deivce_list .${treeList[0].ntype}`).html( template('tree_temp',{treeList: treeList}) );
+      }
+    }
+  });
+
+  let getTreeList = function(e){
+    // console.log($(e))
+    // e.stopPropagation();
+    let id = e.parentNode.id;
+    if($(`#${id}`).attr('ntype') == 'device' && $(`#${id} div.maintain_time`).html().trim() != '-'){
+      // sessionStorage.setItem('scanDeviceId');
+      window.location.href = 'recordDetail.html?id='+id;
+    }
+    if($(`#${id} ul li`).length > 0){
+      if($(`#${id}`).attr('expend') == 'true'){
+        $(`#${id} ul`).hide();
+        $(`#${id}`).attr('expend','false');
+      }else{
+        $(`#${id} ul`).show();
+        $(`#${id}`).attr('expend','true');
+      }
+      return;
+    };
+      $.ajax({
+        type: "get",
+        url: apiUrl+ 'maintain/getdevicetypebypid?id='+ id,
+        dataType: "text",
+        contentType: "application/json",
+        beforeSend: function(request) {
+      　　request.setRequestHeader("Authorization", user_token);
+        },
+        success: function (response) {
+        let data = JSON.parse(response);
+          // console.log(data)
+          if(data.IsSuccess){
+            let treeList = data.Content;
+            if(treeList.length > 0){
+              if(treeList[0].ntype == 'device'){
+                $('#sort').on('click',(e)=>{
+                  e.stopImmediatePropagation();
+                  // treeList.forEach(item=>{
+                  //   item.sorttime = new Date(item.time).getTime();
+                  // })
+                  if(e.currentTarget.getAttribute('sort') == 'up'){
+                    $(e.currentTarget).find('use').attr('xlink:href','#iconxia1');
+                    e.currentTarget.setAttribute('sort','down');
+                    
+                      OrderThis(id,1);
+
+                      // treeList.sort(sortTimeUp)
+                      // console.log(treeList)
+                  }else{
+                    $(e.currentTarget).find('use').attr('xlink:href','#iconshang');
+                    e.currentTarget.setAttribute('sort','up');
+                    if(treeList[0].ntype == 'device'){
+                      OrderThis(id,-1);
+
+
+                      // treeList.sort(sortTimeDown)
+                      // console.log(treeList)
+                    }
+                  }
+                });
+              }
+              // treeList.sort(sortTimeUp);
+              // console.log(treeList)
+              $(e.parentNode).append(`
+                <ul class="${treeList[0].ntype}"><ul>
+              `);
+                $(e.parentNode).find('.'+treeList[0].ntype).html( template('tree_temp',{treeList: treeList}) );
+              }
+          }
+        }
+      });
+      // function sortTimeUp(a, b){
+      //   if(a.sorttime == b.sorttime){
+      //     return a.name - b.name
+      //   }
+      //   return a.sorttime - b.sorttime
+      // }
+      // function sortTimeDown(a, b){
+      //   if(a.sorttime == b.sorttime){
+      //     return b.name - a.name
+      //   }
+      //   return b.sorttime - a.sorttime
+      // }
+  }
+  function OrderThis(id,isUp){
+    // let data = {
+    //   'id': id,
+    //   'orderType': isUp
+    // }
+    $.ajax({
+      type: "get",
+      url: apiUrl+ 'maintain/getdevicetypesortbypid?id='+id+'&orderType='+isUp,
+      dataType: "json",
+      contentType: "application/json",
+      beforeSend: function(request) {
+    　　request.setRequestHeader("Authorization", user_token);
+      },
+      success: function (response) {
+        console.log(response)
+        $('#'+id).find('.'+response.Content[0].ntype).html( template('tree_temp',{treeList: response.Content}) );
+      }
+    })
+  }
+
+</script>
+</html>

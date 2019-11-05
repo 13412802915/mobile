@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>友联资产管理平台</title>
+  <script src="../dist/libs/sui/js/jquery-1.10.2.min.js"></script>
+  <script src="http://res.wx.qq.com/open/js/jweixin-1.4.0.js"></script>
+  <script src="../dist/libs/arttemplate-3.0/template-web.js"></script>
+  <script src="../dist/libs/sui/js/zepto.min.js"></script>
+  <script src="../dist/libs/sui/js/dialog.min.js"></script>
+  <script src="../dist/asserts/fonts/iconfont.js"></script>
+  <script src="../dist/libs/public.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/eruda"></script>
+  <script>eruda.init();</script>
+  <link rel="stylesheet" href="../dist/asserts/reset.css">
+  <link rel="stylesheet" href="../dist/asserts/fonts/iconfont.css">
+  <link rel="stylesheet" href="../dist/css/maintain.css">
+  <link rel="stylesheet" href="../dist/css/dialog.css">
+  <script type="text/javascript">
+    document.write("<s"+"cript type='text/javascript' src='../dist/domainjs/maintain.js?t="+Math.random()+"'></s"+"cript>");
+   </script>
+</head>
+
+<body>
+  <div class="main">
+
+    <div class="go_back"><a href="javascript:void(0);" onclick="window.history.back();"> <span class="icon iconfont iconfanhui"></span> 返回</a><span>
+        保养
+    </span></div>
+    <div class="device_name">
+      <span></span>
+    </div>
+    <div class="maintain">
+      <div class="maintain_content">
+        <table width="100%">
+          <thead>
+            <tr>
+              <th class="theContent">内容详情</th>
+              <th class="hasMaintain">是否已保养</th>
+            </tr>
+          </thead>
+          <tbody id="content_detail"></tbody>
+        </table>
+      </div>
+      <div class="maintain_pictrue">
+        <div class="add_pic" id="add_pic">
+          <span class="icon iconfont iconpaizhao">
+            <!-- <input class="fileInpBtn" id="fileInpBtn" type="file" onchange="showPicture(this)" accept="image/*" capture="camera" multiple>  -->
+            <!-- <input class="fileInpBtn" id="fileInpBtn" type="file" accept="image/*" capture="camera" multiple>  -->
+            <div class="fileInpBtn" id="fileInpBtn"></div>
+          </span>
+          拍摄
+        </div>
+      </div>
+    </div>
+    <div class="remarks">
+      <span>保养备注：</span>
+      <textarea type="text" placeholder="选填" noresize></textarea>
+    </div>
+    <div class="submit">
+      <button>确认提交</button>
+    </div>
+  </div>
+</body>
+<script type="text/html" id="content_detail_temp">
+  {{if mainData.length > 0}}
+  {{each mainData item index}}
+    <tr>
+      <td width="80%">{{index+1}}、{{item.maintenance_content}}</td>
+      <td width="20%">
+        <input type="checkbox" name="hasMaintain" id="{{item.id}}">
+      </td>
+    </tr>
+  {{/each}}
+  {{/if}}
+</script>
+
+</html>
