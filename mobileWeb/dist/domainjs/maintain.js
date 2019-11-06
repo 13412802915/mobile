@@ -132,7 +132,6 @@ $(() => {
               },
               success: function (res) {
                 if (res.IsSuccess) {
-
                   notice.update({
                     infoIcon: '../dist/asserts/imgs/icon/success.png',
                     infoText: `提交成功！`,

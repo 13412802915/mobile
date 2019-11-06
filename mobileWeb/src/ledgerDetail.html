@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport"
-    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>友联资产管理平台</title>
   <script src="../dist/libs/sui/js/jquery-1.10.2.min.js"></script>
@@ -15,10 +15,14 @@
   <script src="../dist/libs/common/jquery.namespace.js"></script>
   <script src="../dist/libs/common/esdpec.common.js"></script> -->
   <script src="../dist/libs/public.js"></script>
+  <script src="../dist/libs/sui/js/zepto.min.js"></script>
+  <script src="../dist/libs/sui/js/dialog.min.js"></script>
   <script src="//cdn.jsdelivr.net/npm/eruda"></script>
-  <script>//eruda.init();</script>
+  <script>
+    //eruda.init();
+  </script>
   <link rel="stylesheet" href="../dist/asserts/reset.css">
-  <!-- <link rel="stylesheet" href="./dist/css/dialog.css"> -->
+  <link rel="stylesheet" href="../dist/css/dialog.css">
   <link rel="stylesheet" href="../dist/asserts/fonts/iconfont.css">
   <style>
     html,
@@ -32,10 +36,12 @@
       color: inherit;
 
     }
-.go_home a{
-        position: absolute;
+
+    .go_home a {
+      position: absolute;
       left: 0.3rem;
-}
+    }
+
     .go_home {
       background: #00284D;
       height: 2.2rem;
@@ -43,12 +49,17 @@
       color: #ffffff;
       font-size: 0.8rem;
       padding-left: 0.6rem;
-      position: relative;
+      position: fixed;
+      top: 0;
       text-align: center;
+      width: 100%;
+      z-index: 99;
     }
-    .go_home span{
+
+    .go_home span {
       font-size: 1.2rem;
     }
+
     .title {
       height: 4rem;
       text-align: center;
@@ -60,10 +71,10 @@
 
     .main {
       width: 100%;
-      height: 100%;
       display: flex;
       flex-flow: column;
       /* justify-content: space-evenly; */
+      padding-top: 2.2rem;
     }
 
     .detail_list ul {
@@ -84,10 +95,10 @@
     }
 
     .maintain {
-      height: 8rem;
       display: flex;
       justify-content: space-evenly;
       align-items: center;
+      margin: 1rem 0;
     }
 
     .maintain a {
@@ -134,26 +145,31 @@
       position: relative;
       color: #1F9BDD;
     }
-    .device_pictrue{
+
+    .device_pictrue {
       width: 95%;
       height: 100%;
     }
-    .device_pictrue img{
+
+    .device_pictrue img {
       width: 100%;
       height: calc(100% - 2rem);
     }
+
     .add_pic span.icon {
       font-size: 2.5rem;
       color: #1F9BDD;
     }
-    .device_pictrue >div{
+
+    .device_pictrue>div {
       font-size: 0.6rem;
       color: #777777;
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
-    .update_pic{
+
+    .update_pic {
       width: 4rem;
       height: 2.5rem;
       position: relative;
@@ -161,13 +177,24 @@
       flex-flow: column;
       align-items: center;
     }
-    .update_pic .icon{
+
+    .update_pic .icon {
       font-size: 1.2rem !important;
     }
-    .update_pic .fileInpBtn{
+
+    .update_pic .fileInpBtn {
       width: 100%;
       height: 100%;
-    } 
+    }
+
+    .grey {
+      /* color: #333333 !important; */
+      background: grey !important;
+    }
+
+    .dialog-content-ft {
+      text-align: center;
+    }
   </style>
 </head>
 
@@ -176,13 +203,15 @@
     <!--<div class="title">
       台账详情
     </div>-->
-    <div class="go_home"><a href="home.html"> <span class="icon iconfont iconfanhui"></span> 返回首页</a><span>台账详情</span></div>
+    <div class="go_home"><a href="home.html"> <span class="icon iconfont iconfanhui"></span>
+        返回首页</a><span>台账详情</span></div>
     <div class="detail_list">
       <div>
         <div class="add_pic" id="add_pic">
           <span class="icon iconfont iconpaizhao">
-            <input class="fileInpBtn" id="fileInpBtn" type="file" onchange="showPicture(this)" accept="image/*"
-              multiple>
+            <input class="fileInpBtn" id="fileInpBtn" type="file" onchange="showPicture(this)"
+                   accept="image/*"
+                   multiple>
           </span>
           点击上传设备图片
         </div>
@@ -204,18 +233,27 @@
           使用部门：
           <span></span>
         </li>
+        <li class="acquisition_time">
+          购置时间：
+          <span></span>
+        </li>
+        <li class="specification_type">
+          规格型号：
+          <span></span>
+        </li>
       </ul>
     </div>
     <div class="maintain">
-      <a href="javascript:void(0);" id="maintain1"><button>保养</button></a>
-      <a href="javascript:void(0);" id="inventory"><button>盘点</button></a>
+      <a href="javascript:void(0);" id="maintain1"><button type="button">保养</button></a>
+      <a href="javascript:void(0);" id="inventory"><button type="button">盘点</button></a>
     </div>
   </div>
 </body>
 <script>
   let scanDeviceId = sessionStorage.getItem('scanDeviceId');
   let user_msg = sessionStorage.getItem('user_msg');
-    user_msg = JSON.parse(user_msg);
+  user_msg = JSON.parse(user_msg);
+  let user_token = sessionStorage.getItem('user_token');
   $(() => {
     if (!scanDeviceId) {
       window.location.href = 'home.html';
@@ -238,10 +276,36 @@
               $('.device_number span').html(contentArr.device_number);
               $('.assets_number span').html(contentArr.asset_number);
               $('.use_department span').html(contentArr.DeptName);
-              if(contentArr.picture_path){
+              $('.acquisition_time span').html(new Date(contentArr.acquisition_time)
+                .format("yyyy-MM-dd"));
+              $('.specification_type span').html(contentArr.specification_type);
+
+              //是否已盘点
+              $.ajax({
+                type: "get",
+                url: apiUrl + 'assetaccountinfo/isthisyearhascheck?deviceId=' +
+                  scanDeviceId,
+                dataType: "text",
+                contentType: "application/json",
+                beforeSend: function (request) {
+                  request.setRequestHeader("Authorization", user_token);
+                },
+                success: function (response) {
+                  let data = JSON.parse(response);
+                  if (data.IsSuccess == true) {
+                    if (data.Content > 0) {
+                      $('.maintain a#inventory button').html('已盘点').attr('disabled','disabled').addClass('grey')
+                    } else {
+                      $('.maintain a#inventory button').html('盘点').removeAttr('disabled').removeClass('grey')
+                    }
+                  }
+                }
+              })
+              //是否有图片
+              if (contentArr.picture_path) {
                 $("#add_pic").html(`
                 <div class="device_pictrue">
-                    <img src="${imgUrl}/asset_account/${contentArr.picture_path}" alt="">
+                    <img src="${imgUrl}/asset_account/${contentArr.picture_path}" onerror="{this.src='../dist/asserts/imgs/noimg.png'}" alt="">
                     <div>
                       <div>本照片由
                       <span>${contentArr.picture_uploader}</span>于
@@ -259,6 +323,7 @@
                   </div>
                 `);
               }
+
               $('.maintain a#maintain1').on('click', function () {
                 window.location.href = 'maintain.html';
               });
@@ -266,38 +331,98 @@
           }
         }
       });
-      $('.maintain a#inventory').on('click', function (e) {
+      $('.maintain a#inventory button').on('click', function (e) {
         e.stopImmediatePropagation();
-        alert('未到盘点时间');
+        $('.maintain a#inventory button').dialog({
+          type: 'confirm',
+          style: 'android',
+          titleText: '使用状态',
+          overlayClose: true,
+          content: '请选择使用状态',
+          buttons: [{
+              name: '启用',
+              class: 'dialog-btn-hl',
+              callback: function () {
+                setDeviceState(0,$(e.target))
+              }
+            },
+            {
+              name: '停用',
+              class: '',
+              callback: function () {
+                setDeviceState(1,$(e.target))
+              }
+            },
+            {
+              name: '闲置',
+              class: '',
+              callback: function () {
+                setDeviceState(2,$(e.target))
+              }
+            },
+            {
+              name: '报废',
+              class: '',
+              callback: function () {
+                setDeviceState(3,$(e.target))
+              }
+            }
+          ]
+        });
       })
+     
+      let setDeviceState = function(state,document){
+        // var apiUrl = 'http://172.17.1.100:8089/api/';
+        $.ajax({
+          url: apiUrl + 'assetaccountinfo/saveinventory?deviceId='+scanDeviceId+'&state='+state,
+          dataType: 'json',
+          type: 'post',
+          contentType: "application/json",
+          beforeSend: function (request) {
+            request.setRequestHeader("Authorization", user_token);
+          },
+          success: function (response) {
+            if (response.IsSuccess == true && response.Content == true) {
+              document.dialog({
+                type : 'toast',
+                infoIcon: '../dist/asserts/imgs/icon/success.png',
+                infoText: '已盘点',
+                autoClose: 2500
+              });
+              $('.maintain a#inventory button').html('已盘点').attr('disable','disable').addClass('grey')
+            }
+          }
+        })
+      }
     }
   })
 
   function showPicture(imgFile) {
     let formData = new FormData();
-    let user_token = sessionStorage.getItem('user_token');
     let url = window.URL.createObjectURL(imgFile.files[0]);
     let fileObj = imgFile.files[0]
     console.log(fileObj)
     let reader = new FileReader()
-      reader.readAsDataURL(fileObj)
-      reader.onload = function(e) {
-          let image = new Image() //新建一个img标签（还没嵌入DOM节点)
-          image.src = e.target.result
-          image.onload = function() {
-              let canvas = document.createElement('canvas'), 
-              context = canvas.getContext('2d'),
-              imageWidth = image.width / 2,    //压缩后图片的大小
-              imageHeight = image.height / 2,
-              data = ''
+    reader.readAsDataURL(fileObj)
+    reader.onload = function (e) {
+      let image = new Image() //新建一个img标签（还没嵌入DOM节点)
+      image.src = e.target.result
+      image.onload = function () {
+        let canvas = document.createElement('canvas'),
+          context = canvas.getContext('2d'),
+          imageWidth = image.width / 2, //压缩后图片的大小
+          imageHeight = image.height / 2,
+          data = ''
 
-              canvas.width = imageWidth
-              canvas.height = imageHeight
+        canvas.width = imageWidth
+        canvas.height = imageHeight
 
-              context.drawImage(image, 0, 0, imageWidth, imageHeight)
-              data = canvas.toDataURL('image/jpeg');
-              let nowTime = new Date().getFullYear() + '-' + ((new Date().getMonth() +1)<10?('0'+(new Date().getMonth()+1)):(new Date().getMonth()+1)) +'-'+ (new Date().getDate()<10?('0'+new Date().getDate()):new Date().getDate());
-              $("#add_pic").html(`
+        context.drawImage(image, 0, 0, imageWidth, imageHeight)
+        data = canvas.toDataURL('image/jpeg');
+        let nowTime = new Date().getFullYear() + '-' + ((new Date().getMonth() + 1) < 10 ? (
+          '0' + (new Date().getMonth() + 1)) : (new Date().getMonth() + 1)) + '-' + (
+          new Date().getDate() < 10 ? ('0' + new Date().getDate()) : new Date().getDate());
+        $("#add_pic").html(`
               <div class="device_pictrue">
                 <img src="${data}" alt="">
                   <div>
@@ -312,46 +437,46 @@
                   </div>
                 </div>
               `);
-              // console.log(imgFile.files[0])
-              formData.append('imgs', imgFile.files[0], imgFile.files[0].name);
-            //文件上传
-              $.ajax({
-                type: "post",
-                url: apiUrl+ 'filemanage/fileupload?type=asset_account',
-                dataType: "json",
-                data: formData,
-                cache: false,
-                processData:false,
-                contentType:false,
-                beforeSend: function(request) {
-              　　request.setRequestHeader("Authorization", user_token);
-                },
-                success: function (response) {
-                  // console.log(response);
-                  // POST /api/assetaccountinfo/saveassetaccountpic
-                  let pictrueData = {
-                    id: scanDeviceId,
-                    picture_path: response
-                  };
-                  // console.log(pictrueData)
-                  $.ajax({
-                    type: "post",
-                    url: apiUrl+ 'assetaccountinfo/saveassetaccountpic',
-                    dataType: "json",
-                    contentType: "application/json",
-                    data: JSON.stringify(pictrueData),
-                    beforeSend: function(request) {
-                  　　request.setRequestHeader("Authorization", user_token);
-                    },
-                    success: function (response) {
-                      console.log(response);
-                    }
-                  })
-                }
-              })
-
+        // console.log(imgFile.files[0])
+        formData.append('imgs', imgFile.files[0], imgFile.files[0].name);
+        //文件上传
+        $.ajax({
+          type: "post",
+          url: apiUrl + 'filemanage/fileupload?type=asset_account',
+          dataType: "json",
+          data: formData,
+          cache: false,
+          processData: false,
+          contentType: false,
+          beforeSend: function (request) {
+            request.setRequestHeader("Authorization", user_token);
+          },
+          success: function (response) {
+            // console.log(response);
+            // POST /api/assetaccountinfo/saveassetaccountpic
+            let pictrueData = {
+              id: scanDeviceId,
+              picture_path: response
+            };
+            // console.log(pictrueData)
+            $.ajax({
+              type: "post",
+              url: apiUrl + 'assetaccountinfo/saveassetaccountpic',
+              dataType: "json",
+              contentType: "application/json",
+              data: JSON.stringify(pictrueData),
+              beforeSend: function (request) {
+                request.setRequestHeader("Authorization", user_token);
+              },
+              success: function (response) {
+                console.log(response);
+              }
+            })
           }
-        }
+        })
+
+      }
+    }
 
   }
 </script>

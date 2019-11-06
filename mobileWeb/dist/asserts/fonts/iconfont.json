@@ -1,0 +1,156 @@
+{
+  "id": "1334548",
+  "name": "资产移动端",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "479421",
+      "name": "拍照",
+      "font_class": "paizhao",
+      "unicode": "e620",
+      "unicode_decimal": 58912
+    },
+    {
+      "icon_id": "738194",
+      "name": "记录",
+      "font_class": "jilu",
+      "unicode": "e61f",
+      "unicode_decimal": 58911
+    },
+    {
+      "icon_id": "942961",
+      "name": "扫描二维码",
+      "font_class": "icon2",
+      "unicode": "e67e",
+      "unicode_decimal": 59006
+    },
+    {
+      "icon_id": "975636",
+      "name": "勾",
+      "font_class": "gou",
+      "unicode": "e643",
+      "unicode_decimal": 58947
+    },
+    {
+      "icon_id": "1137772",
+      "name": "返回",
+      "font_class": "fanhui",
+      "unicode": "e675",
+      "unicode_decimal": 58997
+    },
+    {
+      "icon_id": "2018142",
+      "name": "图片 ",
+      "font_class": "tupian",
+      "unicode": "e606",
+      "unicode_decimal": 58886
+    },
+    {
+      "icon_id": "3270293",
+      "name": "减",
+      "font_class": "jian",
+      "unicode": "e78d",
+      "unicode_decimal": 59277
+    },
+    {
+      "icon_id": "4403693",
+      "name": "白名单查询",
+      "font_class": "baimingdanchaxun",
+      "unicode": "e634",
+      "unicode_decimal": 58932
+    },
+    {
+      "icon_id": "4685705",
+      "name": "提示",
+      "font_class": "Group-",
+      "unicode": "e68a",
+      "unicode_decimal": 59018
+    },
+    {
+      "icon_id": "4734126",
+      "name": "配置清单",
+      "font_class": "ic_configchecklist",
+      "unicode": "e602",
+      "unicode_decimal": 58882
+    },
+    {
+      "icon_id": "4931608",
+      "name": "日历",
+      "font_class": "rili",
+      "unicode": "e627",
+      "unicode_decimal": 58919
+    },
+    {
+      "icon_id": "5425709",
+      "name": "加",
+      "font_class": "jia",
+      "unicode": "e6b6",
+      "unicode_decimal": 59062
+    },
+    {
+      "icon_id": "5467268",
+      "name": "树形-",
+      "font_class": "ICONbiaozhun-",
+      "unicode": "e6b9",
+      "unicode_decimal": 59065
+    },
+    {
+      "icon_id": "5467269",
+      "name": "树形+",
+      "font_class": "ICONbiaozhun-1",
+      "unicode": "e6ba",
+      "unicode_decimal": 59066
+    },
+    {
+      "icon_id": "5901139",
+      "name": "下",
+      "font_class": "xia",
+      "unicode": "e624",
+      "unicode_decimal": 58916
+    },
+    {
+      "icon_id": "6204100",
+      "name": "右",
+      "font_class": "you",
+      "unicode": "e60d",
+      "unicode_decimal": 58893
+    },
+    {
+      "icon_id": "6755279",
+      "name": "上",
+      "font_class": "shang",
+      "unicode": "e6af",
+      "unicode_decimal": 59055
+    },
+    {
+      "icon_id": "6755280",
+      "name": "下",
+      "font_class": "xia1",
+      "unicode": "e6b0",
+      "unicode_decimal": 59056
+    },
+    {
+      "icon_id": "8145809",
+      "name": "上传照片",
+      "font_class": "shangchuanzhaopian",
+      "unicode": "e661",
+      "unicode_decimal": 58977
+    },
+    {
+      "icon_id": "10006024",
+      "name": "拍照",
+      "font_class": "paizhao1",
+      "unicode": "e66f",
+      "unicode_decimal": 58991
+    },
+    {
+      "icon_id": "10033407",
+      "name": "机器人_#333333_128_3505115",
+      "font_class": "jiqiren___",
+      "unicode": "e600",
+      "unicode_decimal": 58880
+    }
+  ]
+}
