@@ -145,11 +145,11 @@
               $('.divece_name span').html(contentArr.device_name);
               $('.device_number span').html(contentArr.device_number);
               $('.use_department span').html(contentArr.DeptName);
-              $('.acquisition_time span').html(new Date(contentArr.acquisition_time).format("yyyy-MM-dd"));
+              $('.acquisition_time span').html(contentArr.acquisition_time?new Date(contentArr.acquisition_time).format("yyyy-MM-dd"):'无');
               $('.specification_type span').html(contentArr.specification_type);
               if(contentArr.picture_path){
                 $('.device_img').html(`
-                <img src="${imgUrl}/asset_account/${contentArr.picture_path}"  onerror="{this.src='../dist/asserts/imgs/noimg.png'}" alt="">
+                <img src="${imgUrl}/asset_account/${contentArr.picture_path}" alt="">
                 `)
               }
               sessionStorage.setItem('use_department',contentArr.use_department)

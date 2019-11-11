@@ -1,5 +1,5 @@
-let apiUrl = 'http://172.17.1.100:8089/api/';
-// let apiUrl = 'http://app.esdgd.com/api/';
+// let apiUrl = 'http://172.17.1.100:8089/api/';
+let apiUrl = 'http://app.esdgd.com/api/';
 let imgUrl = 'http://app.esdgd.com/upload'
 // let id = getQueryVariable('id');
 function getQueryVariable(variable){

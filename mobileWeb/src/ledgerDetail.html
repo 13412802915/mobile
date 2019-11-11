@@ -372,7 +372,6 @@
       })
      
       let setDeviceState = function(state,document){
-        // var apiUrl = 'http://172.17.1.100:8089/api/';
         $.ajax({
           url: apiUrl + 'assetaccountinfo/saveinventory?deviceId='+scanDeviceId+'&state='+state,
           dataType: 'json',
@@ -389,7 +388,7 @@
                 infoText: '已盘点',
                 autoClose: 2500
               });
-              $('.maintain a#inventory button').html('已盘点').attr('disable','disable').addClass('grey')
+              $('.maintain a#inventory button').html('已盘点').attr('disabled','disabled').addClass('grey')
             }
           }
         })

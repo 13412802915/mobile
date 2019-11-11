@@ -239,7 +239,7 @@
   let user_token = sessionStorage.getItem('user_token');
       $.ajax({
         type: "get",
-        url: 'http://172.17.1.100:8089/api/assetaccountinfo/getdevicetypetree',
+        url: apiUrl + 'assetaccountinfo/getdevicetypetree',
         dataType: "json",
         contentType: "application/json",
         beforeSend: function(request) {
@@ -286,6 +286,20 @@
         if (data.IsSuccess) {
           let treeList = data.Content;
           if (treeList.length > 0) {
+            $('#sort').on('click',(e)=>{
+              e.stopImmediatePropagation();
+              if(e.currentTarget.getAttribute('sort') == 'up'){
+                $(e.currentTarget).find('use').attr('xlink:href','#iconxia1');
+                e.currentTarget.setAttribute('sort','down');
+                  OrderThis(id,1);
+              }else{
+                $(e.currentTarget).find('use').attr('xlink:href','#iconshang');
+                e.currentTarget.setAttribute('sort','up');
+                if(treeList[0].ntype == 'device'){
+                  OrderThis(id,-1);
+                }
+              }
+            });
             $(e.parentNode).append(`
               <ul class="${treeList[0].ntype}"><ul>
             `);
@@ -296,5 +310,21 @@
         }
       }
     });
+  }
+
+  function OrderThis(id,isUp){
+    $.ajax({
+      type: "get",
+      url: apiUrl+ 'assetaccountinfo/getdevicetypesortbypid?id='+id+'&orderType='+isUp,
+      dataType: "json",
+      contentType: "application/json",
+      beforeSend: function(request) {
+    　　request.setRequestHeader("Authorization", user_token);
+      },
+      success: function (response) {
+        console.log(response)
+        $('#'+id).find('.'+response.Content[0].ntype).html( template('tree_temp',{treeList: response.Content}) );
+      }
+    })
   }
 </script>

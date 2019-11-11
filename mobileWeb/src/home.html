@@ -3,7 +3,8 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>友联资产管理平台</title>
   <script src="../dist/libs/sui/js/jquery-1.10.2.min.js"></script>
@@ -11,6 +12,10 @@
   <script src="../dist/asserts/fonts/iconfont.js"></script>
   <script src="../dist/libs/sui/js/dialog.min.js"></script>
   <script src="../dist/libs/public.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/eruda"></script>
+  <script>
+  // eruda.init();
+  </script>
   <script src="../dist/libs/sui/js/zepto.min.js"></script>
   <link rel="stylesheet" href="../dist/css/dialog.css">
   <link rel="stylesheet" href="../dist/asserts/reset.css">
@@ -20,7 +25,8 @@
       width: 100%;
       height: 100%;
     }
-    .title{
+
+    .title {
       height: 4rem;
       text-align: center;
       line-height: 4rem;
@@ -28,17 +34,20 @@
       background: #E4E4E4;
       font-size: 1.2rem;
     }
-    a{
+
+    a {
       text-decoration: none;
-      color:inherit;
+      color: inherit;
     }
-    .main{
+
+    .main {
       width: 100%;
       height: 100%;
       display: flex;
       flex-flow: column;
     }
-    .person{
+
+    .person {
       height: 5rem;
       line-height: 5rem;
       padding-left: 1.25rem;
@@ -48,7 +57,7 @@
       font-size: 0.825rem;
     }
 
-    .person span{
+    .person span {
       color: #1199FF;
     }
 
@@ -65,17 +74,21 @@
       border-bottom: 1px solid #dddddd;
       justify-content: center;
     }
-    .operation .icon{
+
+    .operation .icon {
       width: 2.8rem;
       height: 2.8rem;
       fill: #0099FF;
     }
-    .operation li> div,.operation li> a{
+
+    .operation li>div,
+    .operation li>a {
       display: flex;
       flex-flow: column;
       align-items: center;
     }
-    .operation li span{
+
+    .operation li span {
       font-weight: bold;
       margin-top: 0.3rem;
     }
@@ -109,6 +122,14 @@
           </a>
         </li>
         <li>
+          <div id="scan_inventory">
+            <svg class="icon" aria-hidden="true">
+              <use xlink:href="#iconicon2"></use>
+            </svg>
+            <span>扫码盘点</span>
+          </div>
+        </li>
+        <li>
           <a href="inventoryRecord.html">
             <svg class="icon" aria-hidden="true">
               <use xlink:href="#iconbaimingdanchaxun"></use>
@@ -123,7 +144,7 @@
 <script type="text/javascript">
   let url = window.location.href;
   let user_msg = sessionStorage.getItem('user_msg')
-  // console.log(user_msg)
+  let user_token = sessionStorage.getItem('user_token');
   $('.person span').html(JSON.parse(user_msg).name);
   // $.get('/api/account/getjsauth?url=' + 'http://app.esdgd.com/mobileApp/src/home.html', function (data) {
   $.get('/api/account/getjsauth?url=' + url, function (data) {
@@ -132,96 +153,230 @@
     // $('.result').html(data);
     //注入权限验证配置
     wx.config({
-        debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
-        appId: data.Content.appId, // 必填，公众号的唯一标识
-        timestamp: data.Content.timestamp, // 必填，生成签名的时间戳
-        nonceStr: data.Content.nonceStr, // 必填，生成签名的随机串
-        signature: data.Content.signature,// 必填，签名
-        jsApiList: ['scanQRCode'] // 必填，调用微信扫一扫接口
+      debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+      appId: data.Content.appId, // 必填，公众号的唯一标识
+      timestamp: data.Content.timestamp, // 必填，生成签名的时间戳
+      nonceStr: data.Content.nonceStr, // 必填，生成签名的随机串
+      signature: data.Content.signature, // 必填，签名
+      jsApiList: ['scanQRCode'] // 必填，调用微信扫一扫接口
     });
   });
-    //调用微信扫一扫接口
-  $('#scan').on('click',function(){
-      //首先判断是否使用微信内，因为微信JS-SDK只有在微信环境下才有用
-      var environmental= window.navigator.userAgent.toLowerCase();
-      if (environmental.match(/MicroMessenger/i) == 'micromessenger') {
-          wx.ready(function() {
-              //获取本地跳转地址
-              wx.scanQRCode({
-                  needResult: 1,// 默认为0，扫描结果由微信处理，1则直接返回扫描结果，
-                  desc: 'scanQRCode desc',// 可以指定扫二维码还是一维码，默认二者都有
-                  success: function(res) {
-                      //alert(JSON.stringify(res));
-                      //console.log(res);
-                      if(res.errMsg == "scanQRCode:ok"){
-                        //alert(res.resultStr);
-                        let url = res.resultStr;
-                        let deviceId = getUrlValue(url,'id');
-                        if(deviceId){
-                          //获取设备使用部门
-                          $.ajax({
-                            type: "get",
-                            url: apiUrl + 'assetaccountinfo/getassetaccountinfo?id=' + deviceId,
-                            dataType: "text",
-                            contentType: "application/json",
-                            success: function (response) {
-                              let data = JSON.parse(response);
-                              if (data.IsSuccess == true) {
-                                if (data.Content != '') {
-                                  let contentArr = data.Content[0];
-                                  console.log(contentArr.use_department)
-                                  console.log(JSON.parse(user_msg).dpId)
-                                  if(contentArr.use_department == null){
-                                    $(window).dialog({
-                                      type: 'confirm',
-                                      style: 'default', // default、ios、android
-                                      titleText: '确认',
-                                      content: '此设备不属于您的部门，您没有权限查看该设备！',
-                                      onClickConfirmBtn: function () {
-                                        window.location.href = 'src/home.html';
-                                      }
-                                    });
-                                    return;
-                                  }
-                                  if(contentArr.use_department != JSON.parse(user_msg).dpId && JSON.parse(user_msg).isAdmin == false){
-                                    $(window).dialog({
-                                      type: 'confirm',
-                                      style: 'default', // default、ios、android
-                                      titleText: '确认',
-                                      content: '此设备不属于您的部门，您没有权限查看该设备！',
-                                      onClickConfirmBtn: function () {
-                                        window.location.href = 'src/home.html';
-                                      }
-                                    });
-                                    return;
-                                  }
-
-                                  sessionStorage.setItem('use_department',contentArr.use_department)
-                                  sessionStorage.setItem('scanDeviceId', deviceId);
-
-                                  window.location.href = 'maintain.html';
-                                }
-                              }
-                            },error: function(error){
-                              console.log(JSON.parse(error.responseText))
-                              // $(window).dialog({
-                              //   type : 'notice',
-                              //   // infoIcon: './dist/asserts/imgs/icon/loading.gif',
-                              //   infoText: '通讯异常！请联系管理员'
-                              // });
-                              alert('通讯异常！请联系管理员')
+  //调用微信扫一扫接口
+  $('#scan').on('click', function () {
+    //首先判断是否使用微信内，因为微信JS-SDK只有在微信环境下才有用
+    var environmental = window.navigator.userAgent.toLowerCase();
+    if (environmental.match(/MicroMessenger/i) == 'micromessenger') {
+      wx.ready(function () {
+        //获取本地跳转地址
+        wx.scanQRCode({
+          needResult: 1, // 默认为0，扫描结果由微信处理，1则直接返回扫描结果，
+          desc: 'scanQRCode desc', // 可以指定扫二维码还是一维码，默认二者都有
+          success: function (res) {
+            //alert(JSON.stringify(res));
+            //console.log(res);
+            if (res.errMsg == "scanQRCode:ok") {
+              //alert(res.resultStr);
+              let url = res.resultStr;
+              let deviceId = getUrlValue(url, 'id');
+              if (deviceId) {
+                //获取设备使用部门
+                $.ajax({
+                  type: "get",
+                  url: apiUrl + 'assetaccountinfo/getassetaccountinfo?id=' +
+                    deviceId,
+                  dataType: "text",
+                  contentType: "application/json",
+                  success: function (response) {
+                    let data = JSON.parse(response);
+                    if (data.IsSuccess == true) {
+                      if (data.Content != '') {
+                        let contentArr = data.Content[0];
+                        //console.log(contentArr.use_department)
+                        //console.log(JSON.parse(user_msg).dpId)
+                        if (contentArr.use_department == null) {
+                          $(window).dialog({
+                            type: 'confirm',
+                            style: 'default', // default、ios、android
+                            titleText: '确认',
+                            content: '此设备不属于您的部门，您没有权限查看该设备！',
+                            onClickConfirmBtn: function () {
+                              window.location.href = 'home.html';
                             }
                           });
-                          // sessionStorage.setItem("scanDeviceId", JSON.stringify(deviceId));
-
+                          return;
                         }
+                        if (contentArr.use_department != JSON.parse(user_msg)
+                          .dpId && JSON.parse(user_msg).isAdmin == false) {
+                          $(window).dialog({
+                            type: 'confirm',
+                            style: 'default', // default、ios、android
+                            titleText: '确认',
+                            content: '此设备不属于您的部门，您没有权限查看该设备！',
+                            onClickConfirmBtn: function () {
+                              window.location.href = 'home.html';
+                            }
+                          });
+                          return;
+                        }
+                        sessionStorage.setItem('use_department', contentArr.use_department)
+                        sessionStorage.setItem('scanDeviceId', deviceId);
+                        window.location.href = 'maintain.html';
                       }
+                    }
+                  },
+                  error: function (error) {
+                    console.log(JSON.parse(error.responseText))
+                    alert('通讯异常！请联系管理员')
                   }
-              });
-          });
-      }else {
-          alert("请在微信中登录！");
-      }
+                });
+                // sessionStorage.setItem("scanDeviceId", JSON.stringify(deviceId));
+
+              }
+            }
+          }
+        });
+      });
+    } else {
+      alert("请在微信中登录！");
+    }
+  });
+
+  $('#scan_inventory').on('click', function () {
+    //首先判断是否使用微信内，因为微信JS-SDK只有在微信环境下才有用
+    var environmental = window.navigator.userAgent.toLowerCase();
+    if (environmental.match(/MicroMessenger/i) == 'micromessenger') {
+      wx.ready(function () {
+        //获取本地跳转地址
+        wx.scanQRCode({
+          needResult: 1, // 默认为0，扫描结果由微信处理，1则直接返回扫描结果，
+          desc: 'scanQRCode desc', // 可以指定扫二维码还是一维码，默认二者都有
+          success: function (res) {
+            //alert(JSON.stringify(res));
+            // console.log(res);
+            if (res.errMsg == "scanQRCode:ok") {
+              // alert(res.resultStr);
+              let url = res.resultStr;
+              let deviceId = getUrlValue(url, 'id');
+              //是否已盘点
+              $.ajax({
+                type: "get",
+                url: apiUrl + 'assetaccountinfo/isthisyearhascheck?deviceId=' + deviceId,
+                dataType: "text",
+                contentType: "application/json",
+                beforeSend: function (request) {
+                  request.setRequestHeader("Authorization", user_token);
+                },
+                success: function (response) {
+                  let data = JSON.parse(response);
+                  if (data.IsSuccess == true) {
+                    if (data.Content > 0) {
+                    $('#scan_inventory').dialog({
+                      type: 'toast',
+                      infoIcon: '../dist/asserts/imgs/icon/fail.png',
+                      infoText: '该设备已盘点,请勿重复盘点',
+                      autoClose: 2500
+                     });
+                    } else {
+                      if (deviceId) {
+                        //获取设备使用部门
+                        $.ajax({
+                          type: "get",
+                          url: apiUrl + 'assetaccountinfo/getassetaccountinfo?id=' + deviceId,
+                          dataType: "text",
+                          contentType: "application/json",
+                          success: function (response) {
+                            let data = JSON.parse(response);
+                            if (data.IsSuccess == true) {
+                              if (data.Content != '') {
+                                let contentArr = data.Content[0];
+                                sessionStorage.setItem('use_department',contentArr.use_department)
+                                sessionStorage.setItem('scanDeviceId',deviceId);
+                                //window.location.href = 'ledgerDetail.html';
+                                let link = document.createElement('a');
+                                link.href = "javascript:;";
+                                link.click()
+                                $(link).dialog({
+                                  type: 'confirm',
+                                  style: 'android',
+                                  titleText: '设置' + contentArr.device_name + '使用状态',
+                                  overlayClose: true,
+                                  content: '请选择使用状态',
+                                  buttons: [{
+                                      name: '启用',
+                                      class: 'dialog-btn-hl',
+                                      callback: function () {
+                                        setDeviceState(0, $(link))
+                                      }
+                                    },
+                                    {
+                                      name: '停用',
+                                      class: '',
+                                      callback: function () {
+                                        setDeviceState(1, $(link))
+                                      }
+                                    },
+                                    {
+                                      name: '闲置',
+                                      class: '',
+                                      callback: function () {
+                                        setDeviceState(2, $(link))
+                                      }
+                                    },
+                                    {
+                                      name: '报废',
+                                      class: '',
+                                      callback: function () {
+                                        setDeviceState(3, $(link))
+                                      }
+                                    }
+                                  ]
+                                });
+
+                                let setDeviceState = function (state,
+                                  document) {
+                                  $.ajax({
+                                    url: apiUrl + 'assetaccountinfo/saveinventory?deviceId=' + deviceId + '&state=' + state,
+                                    dataType: 'json',
+                                    type: 'post',
+                                    contentType: "application/json",
+                                    beforeSend: function (request) {
+                                      request.setRequestHeader("Authorization",user_token);
+                                    },
+                                    success: function (response) {
+                                      if (response.IsSuccess ==
+                                        true && response
+                                        .Content == true) {
+                                        document.dialog({
+                                          type: 'toast',
+                                          infoIcon: '../dist/asserts/imgs/icon/success.png',
+                                          infoText: contentArr.device_name + '已盘点',
+                                          autoClose: 2500
+                                        });
+                                      }
+                                    }
+                                  })
+                                }
+                              }
+                            }
+                          },
+                          error: function (error) {
+                            console.log(JSON.parse(error.responseText))
+                            alert('通讯异常！请联系管理员')
+                          }
+                        });
+                      }
+                    }
+                  }
+                }
+              })
+            }
+          }
+        });
+      });
+    } else {
+      alert("请在微信中登录！");
+    }
   });
 </script>
+
 </html>
